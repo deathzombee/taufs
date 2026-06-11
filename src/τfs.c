@@ -36,11 +36,11 @@ struct options {
 } options;
 
 /** macro to define options */
-#define PIFS_OPT_KEY(t, p, v) { t, offsetof(struct options, p), v }
+#define TAUFS_OPT_KEY(t, p, v) { t, offsetof(struct options, p), v }
 
-static struct fuse_opt pifs_opts[] =
+static struct fuse_opt taufs_opts[] =
 {
-  PIFS_OPT_KEY("mdd=%s", mdd, 0),
+  TAUFS_OPT_KEY("mdd=%s", mdd, 0),
 };
 
 #define FULL_PATH(path) \
@@ -48,7 +48,7 @@ static struct fuse_opt pifs_opts[] =
   snprintf(full_path, PATH_MAX, "%s%s", options.mdd, path); \
   printf("full_path: %s\n", full_path);
 
-static int pifs_getattr(const char *path, struct stat *buf)
+static int taufs_getattr(const char *path, struct stat *buf)
 {
   FULL_PATH(path);
   int ret = lstat(full_path, buf);
@@ -56,7 +56,7 @@ static int pifs_getattr(const char *path, struct stat *buf)
   return ret == -1 ? -errno : ret;
 }
 
-static int pifs_readlink(const char *path, char *buf, size_t bufsiz)
+static int taufs_readlink(const char *path, char *buf, size_t bufsiz)
 {
   FULL_PATH(path);
   int ret = readlink(full_path, buf, bufsiz - 1);
@@ -68,84 +68,84 @@ static int pifs_readlink(const char *path, char *buf, size_t bufsiz)
   return 0;
 }
 
-static int pifs_mknod(const char *path, mode_t mode, dev_t dev)
+static int taufs_mknod(const char *path, mode_t mode, dev_t dev)
 {
   FULL_PATH(path);
   int ret = mknod(full_path, mode, dev);
   return ret == -1 ? -errno : ret;
 }
 
-static int pifs_mkdir(const char *path, mode_t mode)
+static int taufs_mkdir(const char *path, mode_t mode)
 {
   FULL_PATH(path);
   int ret = mkdir(full_path, mode | S_IFDIR);
   return ret == -1 ? -errno : ret;
 }
 
-static int pifs_unlink(const char *path)
+static int taufs_unlink(const char *path)
 {
   FULL_PATH(path);
   int ret = unlink(full_path);
   return ret == -1 ? -errno : ret;
 }
 
-static int pifs_rmdir(const char *path)
+static int taufs_rmdir(const char *path)
 {
   FULL_PATH(path);
   int ret = rmdir(full_path);
   return ret == -1 ? -errno : ret;
 }
 
-static int pifs_symlink(const char *oldpath, const char *newpath)
+static int taufs_symlink(const char *oldpath, const char *newpath)
 {
   FULL_PATH(newpath);
   int ret = symlink(oldpath, full_path);
   return ret == -1 ? -errno : ret;
 }
 
-static int pifs_rename(const char *oldpath, const char *newpath)
+static int taufs_rename(const char *oldpath, const char *newpath)
 {
   FULL_PATH(newpath);
   int ret = rename(oldpath, full_path);
   return ret == -1 ? -errno : ret;
 }
 
-static int pifs_link(const char *oldpath, const char *newpath)
+static int taufs_link(const char *oldpath, const char *newpath)
 {
   FULL_PATH(newpath);
   int ret = link(oldpath, full_path);
   return ret == -1 ? -errno : ret;
 }
 
-static int pifs_chmod(const char *path, mode_t mode)
+static int taufs_chmod(const char *path, mode_t mode)
 {
   FULL_PATH(path);
   int ret = chmod(full_path, mode);
   return ret == -1 ? -errno : ret;
 }
 
-static int pifs_chown(const char *path, uid_t owner, gid_t group)
+static int taufs_chown(const char *path, uid_t owner, gid_t group)
 {
   FULL_PATH(path);
   int ret = chown(full_path, owner, group);
   return ret == -1 ? -errno : ret;
 }
 
-static int pifs_truncate(const char *path, off_t length)
+static int taufs_truncate(const char *path, off_t length)
 {
   FULL_PATH(path);
   int ret = truncate(full_path, length * 2);
   return ret == -1 ? -errno : ret;
 }
 
-static int pifs_utime(const char *path, struct utimbuf *times)
+static int taufs_utime(const char *path, struct utimbuf *times)
 {
   FULL_PATH(path);
   int ret = utime(full_path, times);
   return ret == -1 ? -errno : ret;
 }
 
-static int pifs_open(const char *path, struct fuse_file_info *info)
+static int taufs_open(const char *path, struct fuse_file_info *info)
 {
   FULL_PATH(path);
   int ret = open(full_path, info->flags);
@@ -153,7 +153,7 @@ static int pifs_open(const char *path, struct fuse_file_info *info)
   return ret == -1 ? -errno : 0;
 }
 
-static int pifs_read(const char *path, char *buf, size_t count, off_t offset,
+static int taufs_read(const char *path, char *buf, size_t count, off_t offset,
                      struct fuse_file_info *info)
 {
   int ret = lseek(info->fh, offset * 2, SEEK_SET);
@@ -176,7 +176,7 @@ static int pifs_read(const char *path, char *buf, size_t count, off_t offset,
   return count;
 }
 
-static int pifs_write(const char *path, const char *buf, size_t count,
+static int taufs_write(const char *path, const char *buf, size_t count,
                       off_t offset, struct fuse_file_info *info)
 {
   int ret = lseek(info->fh, offset * 2, SEEK_SET);
@@ -201,27 +201,27 @@ static int pifs_write(const char *path, const char *buf, size_t count,
   return count;
 }
 
-static int pifs_statfs(const char *path, struct statvfs *buf)
+static int taufs_statfs(const char *path, struct statvfs *buf)
 {
   FULL_PATH(path);
   int ret = statvfs(full_path, buf);
   return ret == -1 ? -errno : ret;
 }
 
-static int pifs_release(const char *path, struct fuse_file_info *info)
+static int taufs_release(const char *path, struct fuse_file_info *info)
 {
   int ret = close(info->fh);
   return ret == -1 ? -errno : ret;
 }
 
-static int pifs_fsync(const char *path, int datasync,
+static int taufs_fsync(const char *path, int datasync,
                       struct fuse_file_info *info)
 {
   int ret = datasync ? fdatasync(info->fh) : fsync(info->fh);
   return ret == -1 ? -errno : ret;
 }
 
-static int pifs_setxattr(const char *path, const char *name, const char *value,
+static int taufs_setxattr(const char *path, const char *name, const char *value,
                          size_t size, int flags)
 {
   FULL_PATH(path);
@@ -229,7 +229,7 @@ static int pifs_setxattr(const char *path, const char *name, const char *value,
   return ret == -1 ? -errno : ret;
 }
 
-static int pifs_getxattr(const char *path, const char *name, char *value,
+static int taufs_getxattr(const char *path, const char *name, char *value,
                          size_t size)
 {
   FULL_PATH(path);
@@ -237,21 +237,21 @@ static int pifs_getxattr(const char *path, const char *name, char *value,
   return ret == -1 ? -errno : ret;
 }
 
-static int pifs_listxattr(const char *path, char *list, size_t size)
+static int taufs_listxattr(const char *path, char *list, size_t size)
 {
   FULL_PATH(path);
   int ret = listxattr(full_path, list, size);
   return ret == -1 ? -errno : ret;
 }
 
-static int pifs_removexattr(const char *path, const char *name)
+static int taufs_removexattr(const char *path, const char *name)
 {
   FULL_PATH(path);
   int ret = removexattr(full_path, name);
   return ret == -1 ? -errno : ret;
 }
 
-static int pifs_opendir(const char *path, struct fuse_file_info *info)
+static int taufs_opendir(const char *path, struct fuse_file_info *info)
 {
   FULL_PATH(path);
   DIR *dir = opendir(full_path);
@@ -259,7 +259,7 @@ static int pifs_opendir(const char *path, struct fuse_file_info *info)
   return !dir ? -errno : 0;
 }
 
-static int pifs_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
+static int taufs_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
                        off_t offset, struct fuse_file_info *info)
 {
   DIR *dir = (DIR *) info->fh;
@@ -285,13 +285,13 @@ static int pifs_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
   return 0;
 }
 
-static int pifs_releasedir(const char *path, struct fuse_file_info *info)
+static int taufs_releasedir(const char *path, struct fuse_file_info *info)
 {
   int ret = closedir((DIR *)info->fh);
   return ret == -1 ? -errno : ret;
 }
 
-static int pifs_fsyncdir(const char *path, int datasync,
+static int taufs_fsyncdir(const char *path, int datasync,
                          struct fuse_file_info *info)
 {
   int fd = dirfd((DIR *)info->fh);
@@ -303,14 +303,14 @@ static int pifs_fsyncdir(const char *path, int datasync,
   return ret == -1 ? -errno : ret;
 }
 
-static int pifs_access(const char *path, int mode)
+static int taufs_access(const char *path, int mode)
 {
   FULL_PATH(path);
   int ret = access(full_path, mode);
   return ret == -1 ? -errno : ret;
 }
 
-static int pifs_create(const char *path, mode_t mode,
+static int taufs_create(const char *path, mode_t mode,
                        struct fuse_file_info *info)
 {
   FULL_PATH(path);
@@ -319,28 +319,28 @@ static int pifs_create(const char *path, mode_t mode,
   return ret == -1 ? -errno : 0;
 }
 
-static int pifs_ftruncate(const char *path, off_t length,
+static int taufs_ftruncate(const char *path, off_t length,
                           struct fuse_file_info *info)
 {
   int ret = ftruncate(info->fh, length * 2);
   return ret == -1 ? -errno : ret;
 }
 
-static int pifs_fgetattr(const char *path, struct stat *buf,
+static int taufs_fgetattr(const char *path, struct stat *buf,
                         struct fuse_file_info *info)
 {
   int ret = fstat(info->fh, buf);
   return ret == -1 ? -errno : ret;
 }
 
-static int pifs_lock(const char *path, struct fuse_file_info *info, int cmd,
+static int taufs_lock(const char *path, struct fuse_file_info *info, int cmd,
                      struct flock *lock)
 {
   int ret = fcntl(info->fh, cmd, lock);
   return ret == -1 ? -errno : ret;
 }
 
-static int pifs_utimens(const char *path, const struct timespec times[2])
+static int taufs_utimens(const char *path, const struct timespec times[2])
 {
   DIR *dir = opendir(options.mdd);
   if (!dir) {
@@ -351,40 +351,40 @@ static int pifs_utimens(const char *path, const struct timespec times[2])
   return ret == -1 ? -errno : ret;
 }
 
-static struct fuse_operations pifs_ops = {
-  .getattr = pifs_getattr,
-  .readlink = pifs_readlink,
-  .mknod = pifs_mknod,
-  .mkdir = pifs_mkdir,
-  .rmdir = pifs_rmdir,
-  .unlink = pifs_unlink,
-  .symlink = pifs_symlink,
-  .rename = pifs_rename,
-  .link = pifs_link,
-  .chmod = pifs_chmod,
-  .chown = pifs_chown,
-  .truncate = pifs_truncate,
-  .utime = pifs_utime,
-  .open = pifs_open,
-  .read = pifs_read,
-  .write = pifs_write,
-  .statfs = pifs_statfs,
-  .release = pifs_release,
-  .fsync = pifs_fsync,
-  .setxattr = pifs_setxattr,
-  .getxattr = pifs_getxattr,
-  .listxattr = pifs_listxattr,
-  .removexattr = pifs_removexattr,
-  .opendir = pifs_opendir,
-  .readdir = pifs_readdir,
-  .releasedir = pifs_releasedir,
-  .fsyncdir = pifs_fsyncdir,
-  .access = pifs_access,
-  .create = pifs_create,
-  .ftruncate = pifs_ftruncate,
-  .fgetattr = pifs_fgetattr,
-  .lock = pifs_lock,
-  .utimens = pifs_utimens,
+static struct fuse_operations taufs_ops = {
+  .getattr = taufs_getattr,
+  .readlink = taufs_readlink,
+  .mknod = taufs_mknod,
+  .mkdir = taufs_mkdir,
+  .rmdir = taufs_rmdir,
+  .unlink = taufs_unlink,
+  .symlink = taufs_symlink,
+  .rename = taufs_rename,
+  .link = taufs_link,
+  .chmod = taufs_chmod,
+  .chown = taufs_chown,
+  .truncate = taufs_truncate,
+  .utime = taufs_utime,
+  .open = taufs_open,
+  .read = taufs_read,
+  .write = taufs_write,
+  .statfs = taufs_statfs,
+  .release = taufs_release,
+  .fsync = taufs_fsync,
+  .setxattr = taufs_setxattr,
+  .getxattr = taufs_getxattr,
+  .listxattr = taufs_listxattr,
+  .removexattr = taufs_removexattr,
+  .opendir = taufs_opendir,
+  .readdir = taufs_readdir,
+  .releasedir = taufs_releasedir,
+  .fsyncdir = taufs_fsyncdir,
+  .access = taufs_access,
+  .create = taufs_create,
+  .ftruncate = taufs_ftruncate,
+  .fgetattr = taufs_fgetattr,
+  .lock = taufs_lock,
+  .utimens = taufs_utimens,
   .flag_nullpath_ok = 1,
 };
 
@@ -394,7 +394,7 @@ int main (int argc, char *argv[])
   struct fuse_args args = FUSE_ARGS_INIT(argc, argv);
 
   memset(&options, 0, sizeof(struct options));
-  if (fuse_opt_parse(&args, &options, pifs_opts, NULL) == -1) {
+  if (fuse_opt_parse(&args, &options, taufs_opts, NULL) == -1) {
     return -1;
   }
 
@@ -411,7 +411,7 @@ int main (int argc, char *argv[])
     return -1;
   }
 
-  ret = fuse_main(args.argc, args.argv, &pifs_ops, NULL);
+  ret = fuse_main(args.argc, args.argv, &taufs_ops, NULL);
   fuse_opt_free_args(&args);
   return ret;
 }

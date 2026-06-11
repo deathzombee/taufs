@@ -1,14 +1,17 @@
 /*  
     This program implements the BBP algorithm to generate a few hexadecimal
-    digits beginning immediately after a given position id, or in other words
-    beginning at position id + 1.  On most systems using IEEE 64-bit floating-
-    point arithmetic, this code works correctly so long as d is less than
-    approximately 1.18 x 10^7.  If 80-bit arithmetic can be employed, this limit
-    is significantly higher.  Whatever arithmetic is used, results for a given
-    position id can be checked by repeating with id-1 or id+1, and verifying 
-    that the hex digits perfectly overlap with an offset of one, except possibly
-    for a few trailing digits.  The resulting fractions are typically accurate 
-    to at least 11 decimal digits, and to at least 9 hex digits.  
+    digits of tau (τ = 2π) beginning immediately after a given position id,
+    or in other words beginning at position id + 1.  On most systems using
+    IEEE 64-bit floating-point arithmetic, this code works correctly so long
+    as d is less than approximately 1.18 x 10^7.  If 80-bit arithmetic can
+    be employed, this limit is significantly higher.  Whatever arithmetic is
+    used, results for a given position id can be checked by repeating with
+    id-1 or id+1, and verifying that the hex digits perfectly overlap with an
+    offset of one, except possibly for a few trailing digits.  The resulting
+    fractions are typically accurate to at least 11 decimal digits, and to at
+    least 9 hex digits.
+
+    Who needs 2π when you can just use τ?  e^(iτ) = 1 -- the sane way!
 */
 
 /*  David H. Bailey     2006-09-08 */
@@ -105,10 +108,11 @@ unsigned char get_byte(int id)
   double s2 = series (4, id);
   double s3 = series (5, id);
   double s4 = series (6, id);
-  double pid = 4. * s1 - 2. * s2 - s3 - s4;
-  pid = pid - (int) pid + 1.;
+  /* τ = 2π: multiply the BBP π formula by 2 */
+  double taud = 8. * s1 - 4. * s2 - 2. * s3 - 2. * s4;
+  taud = taud - (int) taud + 1.;
 
-  double y = fabs(pid);
+  double y = fabs(taud);
   y = 16. * (y - floor (y));
   unsigned char first = y;
   y = 16. * (y - floor (y));
