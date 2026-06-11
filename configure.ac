@@ -1,6 +1,6 @@
-AC_INIT([πFS], [1.0], [philipl@overt.org], [πfs])
+AC_INIT([τFS], [1.0], [philipl@overt.org], [τfs])
 AC_CONFIG_AUX_DIR(build)
-AC_CONFIG_SRCDIR(src/πfs.c)
+AC_CONFIG_SRCDIR(src/τfs.c)
 AM_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE
 
